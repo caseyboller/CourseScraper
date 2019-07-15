@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const $ = require('cheerio');
 const getTopResult = require('./getTopResult')
+const getCourseReqs = require('./getCourseReqs')
 
 if (process.argv.length < 3) {
     console.log('Please enter an argument (node .\\getCourses.js \'search terms here\')');
@@ -19,8 +20,14 @@ function getCourses (url) {
                 items.forEach((item) => {
                     results.push({
                         course: item.innerText,
-                        link: item.getAttribute('href'),
+                        link: item.getAttribute('href'),   
                     });
+                    let reqs = new Promise(async (resolve, reject) => {
+                        var ret = await getCourseReqs('https://study.unisa.edu.au' + data[i]['link']);
+                        console.log(ret)
+                        return resolve(ret);
+                    });
+                    results.push(reqs);
                 });
                 return results;
             })
@@ -44,7 +51,7 @@ try {
     .then(function(searchUrl) {
         getCourses(searchUrl).then(function(data) {
             for (var i=0;i<data.length;i++) {
-                console.log(i+1 + '.', data[i]['course'])
+                console.log(i+1 + '.', data[i]);
             }
             return data;
         });

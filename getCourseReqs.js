@@ -1,12 +1,11 @@
 const puppeteer = require('puppeteer');
 const $ = require('cheerio');
 
-function getCourse (url) {
+function getCourseReqs (url) {
     return new Promise(async (resolve, reject) => {
         try {
             const browser = await puppeteer.launch();
             const page = await browser.newPage();
-            console.log('here')
             await page.goto(url);
 
             let results = await page.evaluate(() => {
@@ -30,7 +29,6 @@ function getCourse (url) {
                 console.log(errr);
             })
             
-            console.log(results);
             browser.close();
             return resolve(results);
 
@@ -40,4 +38,4 @@ function getCourse (url) {
     })
 }
 
-getCourse('https://study.unisa.edu.au/courses/105289/2019')
+module.exports = getCourseReqs;

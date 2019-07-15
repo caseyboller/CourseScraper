@@ -8,7 +8,7 @@ if (process.argv.length < 3) {
     return undefined;
 }
 
-function getCourses (url) {
+async function getCourses (url) {
     return new Promise(async (resolve, reject) => {
         try {
             const browser = await puppeteer.launch();
@@ -22,12 +22,12 @@ function getCourses (url) {
                         course: item.innerText,
                         link: item.getAttribute('href'),   
                     });
-                    let reqs = new Promise(async (resolve, reject) => {
-                        var ret = await getCourseReqs('https://study.unisa.edu.au' + data[i]['link']);
-                        console.log(ret)
-                        return resolve(ret);
-                    });
-                    results.push(reqs);
+                    // let reqs = (async () => {
+                    //     var ret = await getCourseReqs('https://study.unisa.edu.au' + data[i]['link']);
+                    //     console.log(ret)
+                    //     return ret;
+                    // });
+                    // results.push(reqs);
                 });
                 return results;
             })
@@ -49,9 +49,13 @@ try {
         return url;
     })
     .then(function(searchUrl) {
-        getCourses(searchUrl).then(function(data) {
+        getCourses(searchUrl).then(async function(data) {
             for (var i=0;i<data.length;i++) {
-                console.log(i+1 + '.', data[i]);
+                console.log(i+1 + '.', data[i]['course']);
+                reqs = await getCourseReqs('https://study.unisa.edu.au' + data[i]['link']);
+                if (reqs[0].length > 0 ) {console.log('    Corequisites: ', reqs[0].toString())};
+                if (reqs[1].length > 0 ) {console.log('    Prerequisites: ', reqs[1].toString())};
+                
             }
             return data;
         });

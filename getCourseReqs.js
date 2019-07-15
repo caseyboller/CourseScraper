@@ -28,7 +28,6 @@ function getCourseReqs (url) {
             }).catch(function (errr) {
                 console.log(errr);
             })
-            
             browser.close();
             return resolve(results);
 
